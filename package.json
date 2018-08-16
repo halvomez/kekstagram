@@ -5,13 +5,10 @@
   "description": "Личный проект «Кекстаграм» от HTML Academy",
   "repository": {
     "type": "git",
-    "url": "git@github.com:htmlacademy-javascript/619887-kekstagram.git"
-  },
-  "bugs": {
-    "url": "https://github.com/htmlacademy-javascript/619887-kekstagram/issues"
+    "url": "git@github.com:halvomez/kekstagram.git"
   },
   "devDependencies": {
-    "eslint": "4.19.1",
+    "eslint": "^5.3.0",
     "eslint-config-htmlacademy": "0.5.2"
   },
   "license": "MIT",
