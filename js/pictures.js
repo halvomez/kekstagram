@@ -49,7 +49,7 @@ photos.forEach((item) => {
 
 document.querySelector('.pictures').appendChild(fragment);
 const bigPicture = document.querySelector('.big-picture');
-bigPicture.classList.remove('hidden');
+// bigPicture.classList.remove('hidden');
 const current = photos[0];
 bigPicture.querySelector('.big-picture__img').setAttribute.src = current.url;
 bigPicture.querySelector('.likes-count').textContent = current.likes;
@@ -61,3 +61,30 @@ bigPicture.querySelector('.social__comment .social__text').textContent = comment
 bigPicture.querySelector('.social__comment-count').classList.add('visually-hidden');
 bigPicture.querySelector('.social__loadmore').classList.add('visually-hidden');
 
+const fileUpload = document.querySelector('#upload-file');
+const fileChange = document.querySelector('.img-upload__overlay');
+const fileChangeClose = document.querySelector('.img-upload__cancel');
+
+fileUpload.addEventListener('change', setUploadEvents);
+
+function addHidden(evt) {
+    if (evt.target === fileChangeClose) {
+        if (evt.type === 'click' || evt.keyCode === 13 || evt.keyCode === 27) {
+            evt.preventDefault();
+            fileChange.classList.add('hidden');
+            fileUpload.value = '';
+        }
+    } else {
+        if (evt.keyCode === 27) {
+            fileChange.classList.add('hidden');
+            fileUpload.value = '';
+        }
+    }
+}
+
+function setUploadEvents() {
+    fileChange.classList.remove('hidden');
+    fileChangeClose.addEventListener('click', addHidden);
+    fileChangeClose.addEventListener('keydown', addHidden);
+    document.addEventListener('keydown', addHidden);
+}
