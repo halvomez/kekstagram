@@ -1,5 +1,8 @@
 'use strict';
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
 const photos = [];
 const comments = [
     'Всё отлично!',
@@ -29,7 +32,8 @@ while (count <= 25) {
         'url': `photos/${count}.jpg`,
         'likes': getRandom(15, 200),
         'comments': comments[getRandom(0, 5)],
-        'descriptions': descriptions[getRandom(0, 5)]
+        'descriptions': descriptions[getRandom(0, 5)],
+        'mark': count
     };
     photos.push(photo);
     count++;
@@ -42,49 +46,75 @@ photos.forEach((item) => {
     const element = template.cloneNode(true);
 
     element.querySelector('.picture__img').setAttribute('src', item.url);
+    element.querySelector('.picture__img').classList.add(`${item.mark}`);
     element.querySelector('.picture__stat--likes').textContent = item.likes;
     element.querySelector('.picture__stat--comments').textContent = item.comments;
     fragment.appendChild(element);
 });
 
 document.querySelector('.pictures').appendChild(fragment);
-const bigPicture = document.querySelector('.big-picture');
-// bigPicture.classList.remove('hidden');
-const current = photos[0];
-bigPicture.querySelector('.big-picture__img').setAttribute.src = current.url;
-bigPicture.querySelector('.likes-count').textContent = current.likes;
-bigPicture.querySelector('.comments-count').textContent = current.comments;
-bigPicture.querySelector('.social__caption').textContent = current.descriptions;
-bigPicture.querySelector('.social__comment img').setAttribute('src', `img/avatar-${getRandom(1, 6)}.svg`);
-bigPicture.querySelector('.social__comment .social__text').textContent = comments[getRandom(0, 5)];
-
-bigPicture.querySelector('.social__comment-count').classList.add('visually-hidden');
-bigPicture.querySelector('.social__loadmore').classList.add('visually-hidden');
 
 const fileUpload = document.querySelector('#upload-file');
+const fileUploadScale = document.querySelector('.img-upload__scale');
 const fileChange = document.querySelector('.img-upload__overlay');
 const fileChangeClose = document.querySelector('.img-upload__cancel');
 
+fileUploadScale.classList.add('hidden');
+
 fileUpload.addEventListener('change', setUploadEvents);
 
-function addHidden(evt) {
-    if (evt.target === fileChangeClose) {
-        if (evt.type === 'click' || evt.keyCode === 13 || evt.keyCode === 27) {
-            evt.preventDefault();
-            fileChange.classList.add('hidden');
-            fileUpload.value = '';
-        }
-    } else {
-        if (evt.keyCode === 27) {
-            fileChange.classList.add('hidden');
-            fileUpload.value = '';
-        }
+function hideFileChange() {
+    fileChange.classList.add('hidden');
+    fileUpload.value = '';
+    document.removeEventListener('keydown', onPressEsc);
+}
+
+function onPressEsc(evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+        hideFileChange();
+    }
+}
+
+function onPressEnter(evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+        hideFileChange();
     }
 }
 
 function setUploadEvents() {
     fileChange.classList.remove('hidden');
-    fileChangeClose.addEventListener('click', addHidden);
-    fileChangeClose.addEventListener('keydown', addHidden);
-    document.addEventListener('keydown', addHidden);
+    fileChangeClose.addEventListener('click', hideFileChange);
+    fileChangeClose.addEventListener('keydown', onPressEnter);
+    document.addEventListener('keydown', onPressEsc);
 }
+
+const imagePreview = document.querySelector('.img-upload__preview');
+const effectsPreview = document.querySelectorAll('.effects__preview');
+effectsPreview.forEach((item) => {
+    item.addEventListener('click', switchFilter);
+});
+
+function switchFilter(evt) {
+    imagePreview.classList = 'img-upload__preview';
+    imagePreview.classList.add(evt.target.classList[1]);
+    if (imagePreview.classList[1] !== 'effects__preview--none') {
+        fileUploadScale.classList.remove('hidden');
+    } else {
+        fileUploadScale.classList.add('hidden');
+    }
+}
+
+const bigPicture = document.querySelector('.big-picture');
+const photosPreview = document.querySelectorAll('.picture__img');
+photosPreview.forEach((img) => {
+    img.addEventListener('click', (evt) => {
+        bigPicture.classList.remove('hidden');
+        const current = photos[evt.target.classList[1] - 1];
+        bigPicture.querySelector('.big-picture__img img').setAttribute('src', current.url);
+        bigPicture.querySelector('.likes-count').textContent = current.likes;
+        bigPicture.querySelector('.social__caption').textContent = current.descriptions;
+        bigPicture.querySelector('.social__comment img').setAttribute('src', `img/avatar-${getRandom(1, 6)}.svg`);
+        bigPicture.querySelector('.social__comment .social__text').textContent = comments[getRandom(0, 5)];
+        bigPicture.querySelector('.social__loadmore').classList.add('hidden');
+    });
+});
